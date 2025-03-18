@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennis Serve Trainer Pro</title>
+    <style>
+        :root {
+            --primary: #2d4053;
+            --secondary: #4a90e2;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --background: #1a1a1a;
+            --surface: #2d2d2d;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            margin: 0;
+        }
+
+        .serve-instruction {
+            background: var(--primary);
+            color: var(--text);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 0 0 1rem 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .serve-side {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            opacity: 0.9;
+        }
+
+        .serve-type {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            color: var(--text);
+        }
+
+        .serve-details {
+            font-size: 2.5rem;
+            margin: 1rem 0;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .button-group {
+            margin: 1rem 0 2rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        button {
+            padding: 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        .made-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .missed-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .finish-btn {
+            background: var(--secondary);
+            color: white;
+            width: 100%;
+            padding: 1.5rem;
+        }
+
+        .stats-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #333333;
+            border-radius: 10px;
+        }
+
+        .coaching-tip {
+            background: #3a3a2a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #ffd700;
+            color: #ffffff;
+        }
+
+        .stat-card {
+            background: #404040;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            color: #cccccc;
+        }
+
+        .highlight {
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .percentage-large {
+            font-size: 1.4em;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            button {
+                padding: 1.5rem;
+                font-size: 1.1rem;
+            }
+            
+            .serve-details {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Serve Instructions & Controls -->
+        <div class="serve-instruction">
+            <div class="serve-side" id="serveSide">DEUCE SIDE</div>
+            <div class="serve-type" id="serveType">FIRST SERVE</div>
+            <div class="serve-details">
+                <span id="placement"></span> • <span id="spinType"></span>
+            </div>
+            
+            <div class="button-group">
+                <button class="made-btn" onclick="handleServe(true)">🎯 MADE</button>
+                <button class="missed-btn" onclick="handleServe(false)">❌ MISSED</button>
+            </div>
+            
+            <button class="finish-btn" onclick="showSummary()">🏁 FINISH SESSION</button>
+        </div>
+
+        <!-- Live Stats & Coaching Tip -->
+        <div class="stats-section">
+            <div class="coaching-tip" id="coachingTip">
+                🎾 Focus on maintaining a consistent ball toss!
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-item">
+                        <span>First Serves:</span>
+                        <span id="liveFirstServe" class="percentage-large">0/0 (0%)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Second Serves:</span>
+                        <span id="liveSecondServe">0/0 (0%)</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-item">
+                        <span>Double Faults:</span>
+                        <span id="liveDoubleFaults" class="highlight">0/0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Total Serves:</span>
+                        <span id="liveTotalServes">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Detailed Analysis by Side</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Deuce Side</h4>
+                    <div class="stat-item"><span>First Wide:</span> <span id="deuceFirstWide">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>First Body:</span> <span id="deuceFirstBody">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>First T:</span> <span id="deuceFirstT">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>Second Wide:</span> <span id="deuceSecondWide">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>Second Body:</span> <span id="deuceSecondBody">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>Second T:</span> <span id="deuceSecondT">0/0 (0%)</span></div>
+                </div>
+                
+                <div class="stat-card">
+                    <h4>Ad Side</h4>
+                    <div class="stat-item"><span>First Wide:</span> <span id="adFirstWide">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>First Body:</span> <span id="adFirstBody">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>First T:</span> <span id="adFirstT">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>Second Wide:</span> <span id="adSecondWide">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>Second Body:</span> <span id="adSecondBody">0/0 (0%)</span></div>
+                    <div class="stat-item"><span>Second T:</span> <span id="adSecondT">0/0 (0%)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stats = {
+            currentSide: 'deuce',
+            firstServes: { attempts: 0, makes: 0 },
+            secondServes: { attempts: 0, makes: 0 },
+            doubleFaults: 0,
+            placements: {
+                deuce: {
+                    first: { wide: 0, body: 0, t: 0 },
+                    second: { wide: 0, body: 0, t: 0 }
+                },
+                ad: {
+                    first: { wide: 0, body: 0, t: 0 },
+                    second: { wide: 0, body: 0, t: 0 }
+                }
+            },
+            attemptedPlacements: {
+                deuce: {
+                    first: { wide: 0, body: 0, t: 0 },
+                    second: { wide: 0, body: 0, t: 0 }
+                },
+                ad: {
+                    first: { wide: 0, body: 0, t: 0 },
+                    second: { wide: 0, body: 0, t: 0 }
+                }
+            },
+            currentServe: 'first',
+            currentInstruction: null
+        }
+
+        const placements = ['wide', 'body', 't'];
+        const firstServeSpins = ['flat', 'topspin', 'slice'];
+        const secondServeSpins = ['topspin', 'slice'];
+
+        function generateInstruction() {
+            const placement = placements[Math.floor(Math.random() * placements.length)];
+            let allowedSpins = [];
+
+            if (stats.currentServe === 'first') {
+                if (stats.currentSide === 'deuce' && placement === 'wide') {
+                    allowedSpins = firstServeSpins.filter(s => s !== 'flat');
+                } else if (stats.currentSide === 'ad' && placement === 't') {
+                    allowedSpins = firstServeSpins.filter(s => s !== 'flat');
+                } else {
+                    allowedSpins = [...firstServeSpins];
+                }
+            } else {
+                allowedSpins = [...secondServeSpins];
+            }
+
+            const spin = allowedSpins[Math.floor(Math.random() * allowedSpins.length)];
+            return { placement, spin };
+        }
+
+        function updateDisplay() {
+            const serveTypeElement = document.getElementById('serveType');
+            const placementElement = document.getElementById('placement');
+            const spinTypeElement = document.getElementById('spinType');
+
+            if (!stats.currentInstruction) {
+                stats.currentInstruction = generateInstruction();
+            }
+
+            document.getElementById('serveSide').textContent = 
+                `${stats.currentSide.toUpperCase()} SIDE`;
+
+            const placementDisplay = stats.currentInstruction.placement === 't' 
+                ? 'T' 
+                : stats.currentInstruction.placement.toUpperCase();
+
+            serveTypeElement.textContent = stats.currentServe === 'first' 
+                ? 'FIRST SERVE' 
+                : 'SECOND SERVE';
+            
+            placementElement.textContent = placementDisplay;
+            spinTypeElement.textContent = stats.currentInstruction.spin.toUpperCase();
+
+            // Update live stats
+            const firstServePct = calculatePercentage(stats.firstServes.makes, stats.firstServes.attempts);
+            document.getElementById('liveFirstServe').textContent = 
+                `${stats.firstServes.makes}/${stats.firstServes.attempts} (${firstServePct}%)`;
+            
+            const secondServePct = calculatePercentage(stats.secondServes.makes, stats.secondServes.attempts);
+            document.getElementById('liveSecondServe').textContent = 
+                `${stats.secondServes.makes}/${stats.secondServes.attempts} (${secondServePct}%)`;
+
+            document.getElementById('liveDoubleFaults').textContent = 
+                `${stats.doubleFaults}/${stats.secondServes.attempts}`;
+
+            document.getElementById('liveTotalServes').textContent = 
+                stats.firstServes.attempts + stats.secondServes.attempts;
+
+            // Update detailed stats by side
+            function updateSideStats(side) {
+                function updateStat(elementId, serveType, placement) {
+                    const made = stats.placements[side][serveType][placement];
+                    const attempted = stats.attemptedPlacements[side][serveType][placement];
+                    const pct = calculatePercentage(made, attempted);
+                    document.getElementById(elementId).textContent = 
+                        `${made}/${attempted} (${pct}%)`;
+                }
+
+                updateStat(`${side}FirstWide`, 'first', 'wide');
+                updateStat(`${side}FirstBody`, 'first', 'body');
+                updateStat(`${side}FirstT`, 'first', 't');
+                updateStat(`${side}SecondWide`, 'second', 'wide');
+                updateStat(`${side}SecondBody`, 'second', 'body');
+                updateStat(`${side}SecondT`, 'second', 't');
+            }
+
+            updateSideStats('deuce');
+            updateSideStats('ad');
+
+            // Update coaching tip
+            document.getElementById('coachingTip').textContent = getCoachingTip();
+        }
+
+        function handleServe(success) {
+            const currentSide = stats.currentSide;
+            const currentPlacement = stats.currentInstruction.placement;
+            const serveType = stats.currentServe;
+
+            stats.attemptedPlacements[currentSide][serveType][currentPlacement]++;
+
+            if (serveType === 'first') {
+                stats.firstServes.attempts++;
+                if (success) {
+                    stats.firstServes.makes++;
+                    stats.placements[currentSide].first[currentPlacement]++;
+                    stats.currentSide = currentSide === 'deuce' ? 'ad' : 'deuce';
+                    stats.currentServe = 'first';
+                } else {
+                    stats.currentServe = 'second';
+                }
+            } else {
+                stats.secondServes.attempts++;
+                if (success) {
+                    stats.secondServes.makes++;
+                    stats.placements[currentSide].second[currentPlacement]++;
+                } else {
+                    stats.doubleFaults++;
+                }
+                stats.currentSide = currentSide === 'deuce' ? 'ad' : 'deuce';
+                stats.currentServe = 'first';
+            }
+
+            stats.currentInstruction = null;
+            updateDisplay();
+        }
+
+        function calculatePercentage(makes, attempts) {
+            return attempts === 0 ? 0 : Math.round((makes / attempts) * 100);
+        }
+
+        let lastTip = '';
+        function getCoachingTip() {
+            const tips = [];
+            const firstServePct = calculatePercentage(stats.firstServes.makes, stats.firstServes.attempts);
+            const secondServePct = calculatePercentage(stats.secondServes.makes, stats.secondServes.attempts);
+            
+            if (stats.firstServes.attempts < 5) return "🔍 Collecting data... keep serving!";
+            
+            if (firstServePct < 55) tips.push("Increase first serve percentage to at least 60%");
+            if (stats.doubleFaults > stats.secondServes.attempts * 0.3) tips.push("Reduce double faults - add more spin");
+            if (stats.placements.deuce.first.t + stats.placements.ad.first.t < 2 && stats.firstServes.attempts > 10) 
+                tips.push("Practice T serves for variety");
+            if ((stats.placements.deuce.second.wide + stats.placements.ad.second.wide) > 
+                (stats.placements.deuce.second.t + stats.placements.ad.second.t) * 2) 
+                tips.push("Vary second serve placement");
+            
+            const newTip = tips.length > 0 ? tips[0] : "💪 Great consistency! Maintain focus";
+            return lastTip = newTip !== lastTip ? newTip : lastTip;
+        }
+
+        function showSummary() {
+            const totalServes = stats.firstServes.attempts + stats.secondServes.attempts;
+            const firstServePercentage = calculatePercentage(stats.firstServes.makes, stats.firstServes.attempts);
+            const secondServePercentage = calculatePercentage(stats.secondServes.makes, stats.secondServes.attempts);
+
+            const summary = `
+                <div class="summary">
+                    <h2>Session Summary</h2>
+                    <div class="stat-item"><span>Total Serves:</span> ${totalServes}</div>
+                    <div class="stat-item"><span>First Serve Percentage:</span> ${firstServePercentage}%</div>
+                    <div class="stat-item"><span>Second Serve Percentage:</span> ${secondServePercentage}%</div>
+                    <div class="stat-item"><span>Double Faults:</span> ${stats.doubleFaults}</div>
+                    
+                    <h3>Deuce Side Performance</h3>
+                    <div class="stat-item"><span>First Serves:</span> ${stats.firstServes.makes - stats.placements.ad.first.wide - stats.placements.ad.first.body - stats.placements.ad.first.t}</div>
+                    <div class="stat-item"><span>Second Serves:</span> ${stats.secondServes.makes - stats.placements.ad.second.wide - stats.placements.ad.second.body - stats.placements.ad.second.t}</div>
+                    
+                    <h3>Ad Side Performance</h3>
+                    <div class="stat-item"><span>First Serves:</span> ${stats.placements.ad.first.wide + stats.placements.ad.first.body + stats.placements.ad.first.t}</div>
+                    <div class="stat-item"><span>Second Serves:</span> ${stats.placements.ad.second.wide + stats.placements.ad.second.body + stats.placements.ad.second.t}</div>
+                </div>
+            `;
+
+            if (confirm(`${summary}\n\nWould you like to restart?`)) {
+                location.reload();
+            }
+        }
+
+        // Initialize first serve
+        updateDisplay();
+    </script>
+</body>
+</html>
