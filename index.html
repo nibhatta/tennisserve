@@ -173,7 +173,7 @@
             
             <div class="button-group">
                 <button class="made-btn" onclick="handleServe(true)">🎯 MADE</button>
-                <button class="missed-btn" onclick="handleServe(false)">❌ MISSED</button>
+                <button class="missed-btn" onclick="handleServe(false)">⛔️ MISSED</button>
             </div>
             
             <button class="finish-btn" onclick="showSummary()">🏁 FINISH SESSION</button>
@@ -273,7 +273,9 @@
             let allowedSpins = [];
 
             if (stats.currentServe === 'first') {
-                if (stats.currentSide === 'deuce' && placement === 'wide') {
+                if (placement === 'wide') {
+                    allowedSpins = ['slice']; // Only slice is allowed for wide placement
+                } else if (stats.currentSide === 'deuce' && placement === 't') {
                     allowedSpins = firstServeSpins.filter(s => s !== 'flat');
                 } else if (stats.currentSide === 'ad' && placement === 't') {
                     allowedSpins = firstServeSpins.filter(s => s !== 'flat');
