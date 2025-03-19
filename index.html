@@ -411,31 +411,48 @@
         }
 
         function showSummary() {
-            const totalServes = stats.firstServes.attempts + stats.secondServes.attempts;
-            const firstServePercentage = calculatePercentage(stats.firstServes.makes, stats.firstServes.attempts);
-            const secondServePercentage = calculatePercentage(stats.secondServes.makes, stats.secondServes.attempts);
+            // Hide the serve-instruction and coaching-tip sections
+            const serveInstruction = document.querySelector('.serve-instruction');
+            const coachingTip = document.querySelector('.coaching-tip');
+            const statsSection = document.querySelector('.stats-section');
 
-            const summary = `
-                <div class="summary">
-                    <h2>Session Summary</h2>
-                    <div class="stat-item"><span>Total Serves:</span> ${totalServes}</div>
-                    <div class="stat-item"><span>First Serve Percentage:</span> ${firstServePercentage}%</div>
-                    <div class="stat-item"><span>Second Serve Percentage:</span> ${secondServePercentage}%</div>
-                    <div class="stat-item"><span>Double Faults:</span> ${stats.doubleFaults}</div>
-                    
-                    <h3>Deuce Side Performance</h3>
-                    <div class="stat-item"><span>First Serves:</span> ${stats.firstServes.makes - stats.placements.ad.first.wide - stats.placements.ad.first.body - stats.placements.ad.first.t}</div>
-                    <div class="stat-item"><span>Second Serves:</span> ${stats.secondServes.makes - stats.placements.ad.second.wide - stats.placements.ad.second.body - stats.placements.ad.second.t}</div>
-                    
-                    <h3>Ad Side Performance</h3>
-                    <div class="stat-item"><span>First Serves:</span> ${stats.placements.ad.first.wide + stats.placements.ad.first.body + stats.placements.ad.first.t}</div>
-                    <div class="stat-item"><span>Second Serves:</span> ${stats.placements.ad.second.wide + stats.placements.ad.second.body + stats.placements.ad.second.t}</div>
-                </div>
-            `;
+            serveInstruction.style.transition = 'opacity 0.5s ease';
+            coachingTip.style.transition = 'opacity 0.5s ease';
+            serveInstruction.style.opacity = '0';
+            coachingTip.style.opacity = '0';
 
-            if (confirm(`${summary}\n\nWould you like to restart?`)) {
-                location.reload();
-            }
+            setTimeout(() => {
+                serveInstruction.style.display = 'none';
+                coachingTip.style.display = 'none';
+
+                // Add Cancel and Restart buttons to the stats-section
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'button-group'; // Reuse the same class for consistent styling
+
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancel';
+                cancelButton.className = 'cancel-btn';
+                cancelButton.onclick = () => {
+                    // Show the hidden sections and hide the buttons
+                    serveInstruction.style.display = '';
+                    coachingTip.style.display = '';
+                    serveInstruction.style.opacity = '1';
+                    coachingTip.style.opacity = '1';
+                    buttonGroup.remove();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                const restartButton = document.createElement('button');
+                restartButton.textContent = 'Restart';
+                restartButton.className = 'restart-btn';
+                restartButton.onclick = () => {
+                    location.reload();
+                };
+
+                buttonGroup.appendChild(cancelButton);
+                buttonGroup.appendChild(restartButton);
+                statsSection.appendChild(buttonGroup);
+            }, 500);
         }
 
         // Initialize first serve
