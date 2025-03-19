@@ -425,12 +425,23 @@
                 serveInstruction.style.display = 'none';
                 coachingTip.style.display = 'none';
 
+                // Add the current date and time to the stats-section
+                const dateTimeDisplay = document.createElement('div');
+                dateTimeDisplay.id = 'dateTimeDisplay';
+                dateTimeDisplay.style.textAlign = 'center';
+                dateTimeDisplay.style.marginBottom = '1rem';
+                dateTimeDisplay.style.fontSize = '1.2rem';
+                dateTimeDisplay.style.color = '#ffffff';
+                const now = new Date();
+                dateTimeDisplay.textContent = `Session Ended: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+                statsSection.prepend(dateTimeDisplay);
+
                 // Add Cancel and Restart buttons to the stats-section
                 const buttonGroup = document.createElement('div');
                 buttonGroup.className = 'button-group'; // Reuse the same class for consistent styling
 
                 const cancelButton = document.createElement('button');
-                cancelButton.textContent = 'Cancel';
+                cancelButton.textContent = 'Keep Serving';
                 cancelButton.className = 'cancel-btn';
                 cancelButton.onclick = () => {
                     // Show the hidden sections and hide the buttons
@@ -439,11 +450,12 @@
                     serveInstruction.style.opacity = '1';
                     coachingTip.style.opacity = '1';
                     buttonGroup.remove();
+                    dateTimeDisplay.remove();
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
 
                 const restartButton = document.createElement('button');
-                restartButton.textContent = 'Restart';
+                restartButton.textContent = 'New Game';
                 restartButton.className = 'restart-btn';
                 restartButton.onclick = () => {
                     location.reload();
