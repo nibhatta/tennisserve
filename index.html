@@ -164,6 +164,49 @@
                 font-size: 2rem;
             }
         }
+
+        button.cancel-btn {
+            background: var(--success); /* Green for "Keep Serving" */
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button.cancel-btn:hover {
+            background: #28a745; /* Slightly brighter green on hover */
+            transform: scale(1.05); /* Subtle zoom effect */
+        }
+
+        button.restart-btn {
+            background: var(--danger); /* Red for "New Game" */
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button.restart-btn:hover {
+            background: #dc3545; /* Slightly brighter red on hover */
+            transform: scale(1.05); /* Subtle zoom effect */
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
     </style>
 </head>
 <body>
