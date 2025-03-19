@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎾 Tennis Serve Trainer</title>
-    <meta name="apple-mobile-web-app-title" content="🎾 Tennis Serve Trainer">
-    <meta name="application-name" content="🎾 Tennis Serve Trainer">
+    <title>Tennis🎾Serve Trainer</title>
+    <meta name="apple-mobile-web-app-title" content="Tennis🎾Serve Trainer">
+    <meta name="application-name" content="Tennis🎾Serve Trainer">
     <link rel="icon" href="assets/tennis-icon.jpeg" type="image/jpg">
     <link rel="apple-touch-icon" href="assets/tennis-icon.jpeg">
     <meta name="theme-color" content="#2d4053">
@@ -142,8 +142,8 @@
             color: #cccccc;
         }
 
-        .highlight {
-            color: var(--success);
+        .double-faults {
+            color: var(--danger);
             font-weight: bold;
             font-size: 1.2em;
         }
@@ -241,18 +241,18 @@
                     </div>
                     <div class="stat-item">
                         <span>Second Serves:</span>
-                        <span id="liveSecondServe">0/0 (0%)</span>
+                        <span id="liveSecondServe" class="percentage-large">0/0 (0%)</span>
                     </div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-item">
                         <span>Double Faults:</span>
-                        <span id="liveDoubleFaults" class="highlight">0/0</span>
+                        <span id="liveDoubleFaults" class="double-faults">0/0</span>
                     </div>
                     <div class="stat-item">
                         <span>Total Serves:</span>
-                        <span id="liveTotalServes">0</span>
+                        <span id="liveTotalServes" class="percentage-large">0</span>
                     </div>
                 </div>
             </div>
@@ -444,15 +444,15 @@
             const firstServePct = calculatePercentage(stats.firstServes.makes, stats.firstServes.attempts);
             const secondServePct = calculatePercentage(stats.secondServes.makes, stats.secondServes.attempts);
             
-            if (stats.firstServes.attempts < 5) return "🔍 Collecting data... keep serving!";
+            if (stats.firstServes.attempts < 5) return "🎾 Focus on maintaining a consistent ball toss!";
             
-            if (firstServePct < 55) tips.push("Increase first serve percentage to at least 60%");
-            if (stats.doubleFaults > stats.secondServes.attempts * 0.3) tips.push("Reduce double faults - add more spin");
+            if (firstServePct < 60) tips.push("Increase first serve percentage to at least 60%");
+            if (stats.doubleFaults > stats.secondServes.attempts * 0.2) tips.push("Reduce double faults - add more spin");
             if (stats.placements.deuce.first.t + stats.placements.ad.first.t < 2 && stats.firstServes.attempts > 10) 
-                tips.push("Practice T serves for variety");
+                tips.push("🎾 Focus on maintaining a consistent ball toss!");
             if ((stats.placements.deuce.second.wide + stats.placements.ad.second.wide) > 
                 (stats.placements.deuce.second.t + stats.placements.ad.second.t) * 2) 
-                tips.push("Vary second serve placement");
+                tips.push("🎾 Focus on maintaining a consistent ball toss!");
             
             const newTip = tips.length > 0 ? tips[0] : "💪 Great consistency! Maintain focus";
             return lastTip = newTip !== lastTip ? newTip : lastTip;
@@ -491,6 +491,7 @@
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Keep Serving';
                 cancelButton.className = 'cancel-btn';
+                cancelButton.setAttribute('aria-label', 'Keep Serving');
                 cancelButton.onclick = () => {
                     // Show the hidden sections and hide the buttons
                     serveInstruction.style.display = '';
@@ -505,6 +506,7 @@
                 const restartButton = document.createElement('button');
                 restartButton.textContent = 'New Game';
                 restartButton.className = 'restart-btn';
+                restartButton.setAttribute('aria-label', 'New Game');
                 restartButton.onclick = () => {
                     location.reload();
                 };
