@@ -320,12 +320,8 @@
             let allowedSpins = [];
 
             if (stats.currentServe === 'first') {
-                if (placement === 'wide') {
-                    allowedSpins = ['slice']; // Only slice is allowed for wide placement
-                } else if (stats.currentSide === 'deuce' && placement === 't') {
-                    allowedSpins = firstServeSpins.filter(s => s !== 'flat');
-                } else if (stats.currentSide === 'ad' && placement === 't') {
-                    allowedSpins = firstServeSpins.filter(s => s !== 'flat');
+                if (placement === 'wide' && stats.currentSide === 'deuce') {
+                    allowedSpins = ['slice']; // Only slice is allowed for wide serves on deuce side
                 } else {
                     allowedSpins = [...firstServeSpins];
                 }
